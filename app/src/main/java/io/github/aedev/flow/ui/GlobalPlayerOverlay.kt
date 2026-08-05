@@ -70,7 +70,6 @@ import io.github.aedev.flow.ui.components.sortCommentsByFilter
 import io.github.aedev.flow.ui.components.Media3SubtitleOverlay
 import io.github.aedev.flow.ui.components.SleepTimerSheet
 import io.github.aedev.flow.ui.components.SubtitleStyle
-import io.github.aedev.flow.ui.screens.player.content.PlayerContent
 import io.github.aedev.flow.ui.screens.player.content.rememberCompleteVideo
 import io.github.aedev.flow.ui.screens.player.dialogs.PlayerDialogsContainer
 import io.github.aedev.flow.ui.screens.player.dialogs.PlayerBottomSheetsContainer
@@ -86,7 +85,6 @@ import io.github.aedev.flow.ui.screens.player.components.SettingsMenuDialog
 import io.github.aedev.flow.ui.screens.player.components.PlayerSettingsPage
 import io.github.aedev.flow.ui.screens.player.components.LockModeTouchShield
 import io.github.aedev.flow.ui.screens.player.components.resolvePlayerQualityLabel
-import io.github.aedev.flow.data.local.SponsorBlockAction
 import io.github.aedev.flow.player.PictureInPictureHelper
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -106,13 +104,13 @@ import kotlinx.coroutines.launch
 
 /**
  * GlobalPlayerOverlay - The main video player overlay that sits above everything.
- * 
+ *
  * This composable handles:
  * - Draggable player layout (expanded/collapsed states)
  * - All player effects (position tracking, controls, PiP, etc.)
  * - Dialogs and bottom sheets
  * - PiP mode rendering
- * 
+ *
  * @param video The current video to play (null if no video)
  * @param isVisible Whether the player overlay should be visible
  * @param playerSheetState State of the draggable player (expanded/collapsed)
@@ -136,12 +134,12 @@ fun GlobalPlayerOverlay(
     onNavigateToShorts: (String) -> Unit
 ) {
     if (video == null || !isVisible) return
-    
+
     val context = LocalContext.current
     val activity = context as ComponentActivity
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
-    
+
     val playerViewModel: VideoPlayerViewModel = hiltViewModel(activity)
     val playerUiState by playerViewModel.uiState.collectAsStateWithLifecycle()
     val playerState by EnhancedPlayerManager.getInstance().playerState.collectAsStateWithLifecycle()
@@ -303,10 +301,10 @@ fun GlobalPlayerOverlay(
     var showDlnaDialog by remember { mutableStateOf(false) }
     val dlnaDevices by DlnaCastManager.devices.collectAsState()
     val isDlnaDiscovering by DlnaCastManager.isDiscovering.collectAsState()
-    
+
     val localIsInPipMode by GlobalPlayerState.isInPipMode.collectAsState()
     var keepMiniOnQueueAutoAdvance by remember { mutableStateOf(false) }
-    
+
     val progressProvider = remember {
         {
             if (screenState.duration > 0) {
@@ -316,7 +314,7 @@ fun GlobalPlayerOverlay(
             }
         }
     }
-    
+
     // Sync fullscreen state with player sheet state
     LaunchedEffect(playerSheetState.currentValue) {
         if (playerSheetState.currentValue == PlayerSheetValue.Collapsed) {
@@ -375,7 +373,7 @@ fun GlobalPlayerOverlay(
         screenState.isFullscreen = false
         screenState.isFullscreenPortrait = false
     }
-    
+
     // ===== EFFECTS =====
     LaunchedEffect(playerUiState.shouldDismissPlayer) {
         if (playerUiState.shouldDismissPlayer) {
@@ -389,7 +387,7 @@ fun GlobalPlayerOverlay(
             keepMiniOnQueueAutoAdvance = playerSheetState.currentValue == PlayerSheetValue.Collapsed
         }
     }
-    
+
     LaunchedEffect(playerUiState.isLoading) {
         val isQueueAutoAdvanceInMiniPlayer =
             keepMiniOnQueueAutoAdvance &&
@@ -430,7 +428,7 @@ fun GlobalPlayerOverlay(
         screenState.revealLockOverlay()
         screenState.onInteraction()
     }
-    
+
     val isMinimized by remember(playerSheetState) {
         derivedStateOf { playerSheetState.fraction > 0.5f }
     }
@@ -446,7 +444,7 @@ fun GlobalPlayerOverlay(
         screenState = screenState,
         lifecycleOwner = lifecycleOwner
     )
-    
+
     AutoHideControlsEffect(
         showControls = screenState.showControls,
         isPlaying = playerState.playWhenReady,
@@ -455,9 +453,9 @@ fun GlobalPlayerOverlay(
         isTouchLocked = screenState.isTouchLocked,
         onHideControls = { screenState.showControls = false }
     )
-    
+
     GestureOverlayAutoHideEffect(screenState)
-    
+
     SetupPipEffects(
         context = context,
         activity = activity,
@@ -480,9 +478,9 @@ fun GlobalPlayerOverlay(
         suppressFullscreenRequest = pipForcedFullscreen,
         isPortrait = screenState.isFullscreenPortrait
     )
-    
+
     OrientationResetEffect(activity)
-    
+
     WatchProgressSaveEffect(
         videoId = video.id,
         video = video,
@@ -492,7 +490,7 @@ fun GlobalPlayerOverlay(
         uiState = playerUiState,
         viewModel = playerViewModel
     )
-    
+
     if (!playerUiState.isRestoredSession) {
         VideoLoadEffect(
             videoId = video.id,
@@ -519,7 +517,7 @@ fun GlobalPlayerOverlay(
             viewModel = playerViewModel
         )
     }
-    
+
     val globalCurrentVideo by GlobalPlayerState.currentVideo.collectAsState()
     LaunchedEffect(globalCurrentVideo?.id) {
         val current = globalCurrentVideo
@@ -532,13 +530,13 @@ fun GlobalPlayerOverlay(
             }
         }
     }
-    
+
     SubscriptionAndLikeEffect(
         videoId = video.id,
         uiState = playerUiState,
         viewModel = playerViewModel
     )
-    
+
     // Short video prompt
     ShortVideoPromptEffect(
         videoDuration = completeVideo.duration,
@@ -549,7 +547,7 @@ fun GlobalPlayerOverlay(
     )
 
     SponsorSkipEffect(context)
-    
+
     OrientationListenerEffect(
         context = context,
         isExpanded = playerSheetState.currentValue == PlayerSheetValue.Expanded,
@@ -562,7 +560,7 @@ fun GlobalPlayerOverlay(
             screenState.isFullscreenPortrait = false
         }
     )
-    
+
     KeepScreenOnEffect(
         isPlaying = playerState.playWhenReady && !playerState.hasEnded,
         activity = activity,
@@ -591,7 +589,7 @@ fun GlobalPlayerOverlay(
             screenState.showControls = true
         }
     }
-    
+
     LaunchedEffect(localIsInPipMode, isLandscape) {
         if (localIsInPipMode) {
             playerSheetState.expand()
@@ -615,7 +613,7 @@ fun GlobalPlayerOverlay(
             val thumbnailUrl = streamInfo?.thumbnails?.maxByOrNull { it.height }?.url
                 ?: video.thumbnailUrl.takeIf { it.isNotEmpty() }
                 ?: "https://i.ytimg.com/vi/${video.id}/hq720.jpg"
-            
+
             val title = streamInfo?.name ?: video.title
             if (title.isNotEmpty() && screenState.duration > 0) {
                 playerViewModel.savePlaybackPosition(
@@ -631,7 +629,7 @@ fun GlobalPlayerOverlay(
             }
         }
     }
-    
+
     // ===== UI =====
     val density = LocalDensity.current
     val floatingSponsorSkipBottomPadding = if (screenState.isFullscreen) {
@@ -927,7 +925,7 @@ fun GlobalPlayerOverlay(
                     } else {
                         modifier
                     }
-                    
+
                     Box(modifier = gestureModifier) {
                         // Zoomable layer: video + subtitles scale together with the pinch transform
                         Box(
@@ -981,7 +979,7 @@ fun GlobalPlayerOverlay(
                             )
                         }
                         } // end zoomable layer
-                        
+
                         // Non-zoomable UI overlays (always at full-screen position)
                         if (!isMinimized && !localIsInPipMode) {
                             PlayerGestureOverlays(
@@ -1055,7 +1053,7 @@ fun GlobalPlayerOverlay(
                                 }
                             }
                         }
-                        
+
                         // Controls overlay - fully expanded only
                         var showRemainingTime by rememberSaveable { mutableStateOf(false) }
                         if (!playerUiState.isUpcoming && !isMinimized && !localIsInPipMode) {
@@ -1082,9 +1080,9 @@ fun GlobalPlayerOverlay(
                                 videoTitle = playerUiState.streamInfo?.name ?: video.title,
                                 playbackSpeed = playerState.playbackSpeed,
                                 resizeMode = screenState.resizeMode,
-                                onResizeClick = { 
+                                onResizeClick = {
                                     screenState.onInteraction()
-                                    screenState.cycleResizeMode() 
+                                    screenState.cycleResizeMode()
                                 },
                                 onPlayPause = {
                                     screenState.onInteraction()
@@ -1113,7 +1111,7 @@ fun GlobalPlayerOverlay(
                                 onSpeedClick = { screenState.showPlaybackSpeedSelector = true },
                                 onFullscreenClick = { screenState.toggleFullscreen() },
                                 isFullscreen = screenState.isFullscreen,
-                                isPipSupported = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O && 
+                                isPipSupported = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O &&
                                     io.github.aedev.flow.player.PictureInPictureHelper.isPlayerPopupSupported(context) &&
                                     pipPreferences.manualPipButtonEnabled,
                                 onPipClick = {
@@ -1544,7 +1542,7 @@ fun GlobalPlayerOverlay(
                 }
             }
         }
-        
+
         // Dialogs
         PlayerDialogsContainer(
             screenState = screenState,
@@ -1567,7 +1565,7 @@ fun GlobalPlayerOverlay(
                 onDismiss = { showSbSubmitDialog = false }
             )
         }
-        
+
         // DLNA device picker dialog
         if (showDlnaDialog) {
             DlnaDevicePickerDialog(
@@ -1596,7 +1594,7 @@ fun GlobalPlayerOverlay(
                 }
             )
         }
-        
+
         // Bottom Sheets
         PlayerBottomSheetsContainer(
             screenState = screenState,

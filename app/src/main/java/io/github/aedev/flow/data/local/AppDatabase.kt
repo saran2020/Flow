@@ -6,7 +6,6 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import io.github.aedev.flow.data.local.dao.CacheDao
 import io.github.aedev.flow.data.local.dao.DownloadDao
-import io.github.aedev.flow.data.local.dao.DownloadedSongDao
 import io.github.aedev.flow.data.local.dao.HomeFeedCacheDao
 import io.github.aedev.flow.data.local.dao.NotificationDao
 import io.github.aedev.flow.data.local.dao.PlaylistDao
@@ -18,7 +17,6 @@ import io.github.aedev.flow.data.local.dao.VideoDao
 import io.github.aedev.flow.data.local.dao.WatchHistoryDao
 import io.github.aedev.flow.data.local.entity.DownloadEntity
 import io.github.aedev.flow.data.local.entity.DownloadItemEntity
-import io.github.aedev.flow.data.local.entity.DownloadedSongEntity
 import io.github.aedev.flow.data.local.entity.HomeFeedCacheEntity
 import io.github.aedev.flow.data.local.entity.MusicHomeCacheEntity
 import io.github.aedev.flow.data.local.entity.NotificationEntity
@@ -42,7 +40,6 @@ import io.github.aedev.flow.data.local.entity.WatchHistoryEntity
         SubscriptionFeedEntity::class,
         MusicHomeCacheEntity::class,
         MusicHomeChipEntity::class,
-        DownloadedSongEntity::class,
         DownloadEntity::class,
         DownloadItemEntity::class,
         WatchHistoryEntity::class,
@@ -60,7 +57,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlaylistDao
     abstract fun notificationDao(): NotificationDao
     abstract fun cacheDao(): CacheDao
-    abstract fun downloadedSongDao(): DownloadedSongDao
     abstract fun downloadDao(): DownloadDao
     abstract fun watchHistoryDao(): WatchHistoryDao
     abstract fun homeFeedCacheDao(): HomeFeedCacheDao

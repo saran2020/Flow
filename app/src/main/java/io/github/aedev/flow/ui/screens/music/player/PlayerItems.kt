@@ -49,9 +49,9 @@ fun UpNextTrackItem(
                 .clip(RoundedCornerShape(4.dp)),
             contentScale = ContentScale.Crop
         )
-        
+
         Spacer(modifier = Modifier.width(12.dp))
-        
+
         // Info
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -70,7 +70,7 @@ fun UpNextTrackItem(
                 overflow = TextOverflow.Ellipsis
             )
         }
-        
+
         // Reorder Controls
         Column {
             IconButton(
@@ -98,91 +98,13 @@ fun UpNextTrackItem(
 }
 
 @Composable
-fun QueueTrackItem(
-    track: MusicTrack,
-    isCurrentlyPlaying: Boolean,
-    onClick: () -> Unit,
-    onRemove: () -> Unit
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = if (isCurrentlyPlaying)
-            MaterialTheme.colorScheme.primary
-        else
-            MaterialTheme.colorScheme.surface,
-        shape = RoundedCornerShape(12.dp),
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Thumbnail
-            Surface(
-                modifier = Modifier.size(48.dp),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                AsyncImage(
-                    model = track.thumbnailUrl,
-                    contentDescription = null
-                )
-            }
-            
-            // Track info
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = track.title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = if (isCurrentlyPlaying) FontWeight.Bold else FontWeight.Normal,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = if (isCurrentlyPlaying)
-                        MaterialTheme.colorScheme.onPrimary
-                    else
-                        MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = track.artist,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (isCurrentlyPlaying)
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                    else
-                        MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            
-            if (isCurrentlyPlaying) {
-                Icon(
-                    imageVector = Icons.Filled.Equalizer,
-                    contentDescription = stringResource(R.string.playing),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            } else {
-                IconButton(onClick = onRemove) {
-                    Icon(
-                        imageVector = Icons.Outlined.Close,
-                        contentDescription = stringResource(R.string.remove),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun RelatedTrackItem(
     track: MusicTrack,
     onClick: () -> Unit
 ) {
     var showMoreOptions by remember { mutableStateOf(false) }
     val onSheetColor = LocalPlayerOnSheetColor.current ?: MaterialTheme.colorScheme.onSurface
-    
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -201,9 +123,9 @@ fun RelatedTrackItem(
                 contentScale = ContentScale.Crop
             )
         }
-        
+
         Spacer(modifier = Modifier.width(16.dp))
-        
+
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = track.title,
@@ -220,7 +142,7 @@ fun RelatedTrackItem(
                 overflow = TextOverflow.Ellipsis
             )
         }
-        
+
         IconButton(onClick = { showMoreOptions = true }) {
             Icon(
                 Icons.Outlined.MoreVert,
@@ -229,7 +151,7 @@ fun RelatedTrackItem(
             )
         }
     }
-    
+
     if (showMoreOptions) {
         io.github.aedev.flow.ui.components.MusicQuickActionsSheet(
             track = track,

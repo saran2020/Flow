@@ -113,7 +113,7 @@ fun PersistentMiniMusicPlayer(
                         )
                     }
             ) {
-                // Container 
+                // Container
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -140,7 +140,7 @@ fun PersistentMiniMusicPlayer(
                                 .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
                         )
 
-                        // Progress 
+                        // Progress
                         val progressTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
                         val progressFillColor = MaterialTheme.colorScheme.primary
                         Box(
@@ -185,7 +185,7 @@ fun PersistentMiniMusicPlayer(
                                             .clip(RoundedCornerShape(12.dp)),
                                         contentScale = ContentScale.Crop
                                     )
-                                    
+
                                     Box(
                                         modifier = Modifier
                                             .fillMaxSize()
@@ -306,141 +306,4 @@ private fun MiniWaveform() {
         barSpacing = 1.5.dp,
         staggerMillis = 120
     )
-}
-
-/**
- * Compact mini player for constrained spaces
- */
-@Composable
-fun CompactMiniMusicPlayer(
-    onExpandClick: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val currentTrack by EnhancedMusicPlayerManager.currentTrack.collectAsState()
-    val playerState by EnhancedMusicPlayerManager.playerState.collectAsState()
-
-    AnimatedVisibility(
-        visible = currentTrack != null,
-        enter = fadeIn(animationSpec = tween(250)) + expandVertically(),
-        exit = fadeOut(animationSpec = tween(180)) + shrinkVertically(),
-        modifier = modifier
-    ) {
-        currentTrack?.let { track ->
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                    .clickable(onClick = onExpandClick),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                tonalElevation = 0.dp,
-                shape = RoundedCornerShape(14.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Album art
-                        Surface(
-                            modifier = Modifier.size(40.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            color = Color.Transparent
-                        ) {
-                            Box {
-                                AsyncImage(
-                                    model = track.listThumbnailUrl,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(RoundedCornerShape(8.dp))
-                                )
-                                if (playerState.isPlaying) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .background(Color.Black.copy(alpha = 0.25f)),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        MiniWaveform()
-                                    }
-                                }
-                            }
-                        }
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = track.title,
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = track.artist,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(2.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        FilledIconButton(
-                            onClick = { EnhancedMusicPlayerManager.togglePlayPause() },
-                            modifier = Modifier.size(40.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        ) {
-                            if (playerState.isBuffering) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(18.dp),
-                                    strokeWidth = 2.dp,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = if (playerState.isPlaying)
-                                        Icons.Filled.Pause
-                                    else
-                                        Icons.Filled.PlayArrow,
-                                    contentDescription = if (playerState.isPlaying) stringResource(R.string.pause) else stringResource(R.string.play),
-                                    modifier = Modifier.size(18.dp),
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        }
-
-                        IconButton(
-                            onClick = onDismiss,
-                            modifier = Modifier.size(34.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = stringResource(R.string.close_player),
-                                modifier = Modifier.size(16.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

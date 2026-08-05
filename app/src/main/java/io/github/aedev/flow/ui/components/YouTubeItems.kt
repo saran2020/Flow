@@ -99,7 +99,7 @@ fun YouTubeListItem(
             RoundedCornerShape(Dimensions.ThumbnailCornerRadius)
         )
     }
-    
+
     ListItem(
         title = title,
         subtitle = subtitle,
@@ -132,89 +132,6 @@ fun YouTubeListItem(
     )
 }
 
-@Composable
-fun YouTubeGridItem(
-    item: YTItem,
-    modifier: Modifier = Modifier,
-    isActive: Boolean = false,
-    isPlaying: Boolean = false,
-    thumbnailRatio: Float = if (item is SongItem && item.musicVideoType != null) 16f / 9 else 1f,
-    fillMaxWidth: Boolean = false,
-    badges: @Composable RowScope.() -> Unit = {
-        if (item is SongItem && item.explicit) {
-            BadgeIcon.Explicit()
-        }
-        if (item is AlbumItem && item.explicit) {
-            BadgeIcon.Explicit()
-        }
-    }
-) {
-    val (title, subtitle, thumbnailUrl, shape) = when (item) {
-        is SongItem -> {
-            val artistNames = item.artists.joinToString { it.name }
-            Quadruple(
-                item.title,
-                artistNames,
-                item.thumbnail,
-                RoundedCornerShape(Dimensions.ThumbnailCornerRadius)
-            )
-        }
-        is AlbumItem -> {
-            val artistNames = item.artists?.joinToString { it.name } ?: ""
-            val year = item.year?.toString() ?: ""
-            val subtitleText = listOfNotNull(artistNames.takeIf { it.isNotEmpty() }, year.takeIf { it.isNotEmpty() })
-                .joinToString(" • ")
-            Quadruple(
-                item.title,
-                subtitleText,
-                item.thumbnail,
-                RoundedCornerShape(Dimensions.ThumbnailCornerRadius)
-            )
-        }
-        is ArtistItem -> Quadruple(
-            item.title,
-            stringResource(R.string.artist),
-            item.thumbnail,
-            CircleShape
-        )
-        is PlaylistItem -> Quadruple(
-            item.title,
-            item.author?.name ?: item.songCountText ?: stringResource(R.string.playlist),
-            item.thumbnail,
-            RoundedCornerShape(Dimensions.ThumbnailCornerRadius)
-        )
-    }
-    
-    GridItem(
-        title = title,
-        subtitle = subtitle,
-        badges = badges,
-        thumbnailContent = {
-            AsyncImage(
-                model = thumbnailUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(shape)
-            )
-            
-            if (isActive || isPlaying) {
-                ItemThumbnail(
-                    thumbnailUrl = thumbnailUrl,
-                    shape = shape,
-                    isActive = isActive,
-                    isPlaying = isPlaying,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        },
-        thumbnailRatio = thumbnailRatio,
-        fillMaxWidth = fillMaxWidth,
-        modifier = modifier
-    )
-}
-
 private fun formatDuration(seconds: Int): String {
     val minutes = seconds / 60
     val secs = seconds % 60
@@ -227,74 +144,6 @@ private data class Quadruple<A, B, C, D>(
     val third: C,
     val fourth: D
 )
-
-@Composable
-fun QuickPickTrackItem(
-    item: SongItem,
-    modifier: Modifier = Modifier,
-    isActive: Boolean = false,
-    isPlaying: Boolean = false,
-    onMenuClick: (() -> Unit)? = null
-) {
-    YouTubeListItem(
-        item = item,
-        isActive = isActive,
-        isPlaying = isPlaying,
-        onMenuClick = onMenuClick,
-        modifier = modifier
-    )
-}
-
-@Composable
-fun ChartTrackItem(
-    item: SongItem,
-    rank: Int,
-    modifier: Modifier = Modifier,
-    isActive: Boolean = false,
-    isPlaying: Boolean = false,
-    onMenuClick: (() -> Unit)? = null
-) {
-    ListItem(
-        title = item.title,
-        subtitle = {
-            BadgeIcon.ChartPosition(rank)
-            if (item.chartChange != null) {
-                BadgeIcon.ChartChange(item.chartChange)
-            }
-            if (item.explicit) {
-                BadgeIcon.Explicit()
-            }
-            Text(
-                text = item.artists.joinToString { it.name },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        thumbnailContent = {
-            ItemThumbnail(
-                thumbnailUrl = item.thumbnail,
-                isActive = isActive,
-                isPlaying = isPlaying,
-                modifier = Modifier.size(Dimensions.ListThumbnailSize)
-            )
-        },
-        trailingContent = {
-            if (onMenuClick != null) {
-                IconButton(onClick = onMenuClick) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = stringResource(R.string.more_options),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        },
-        isActive = isActive,
-        modifier = modifier
-    )
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -321,7 +170,7 @@ fun ChartTrackItem(
     ) {
         BadgeIcon.ChartPosition(rank)
         Spacer(modifier = Modifier.width(8.dp))
-        
+
         AsyncImage(
             model = thumbnailUrl,
             contentDescription = title,
@@ -330,7 +179,7 @@ fun ChartTrackItem(
                 .size(Dimensions.ListThumbnailSize)
                 .clip(RoundedCornerShape(Dimensions.ThumbnailCornerRadius))
         )
-        
+
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -342,10 +191,10 @@ fun ChartTrackItem(
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = if (isPlaying) MaterialTheme.colorScheme.primary 
+                color = if (isPlaying) MaterialTheme.colorScheme.primary
                        else MaterialTheme.colorScheme.onBackground
             )
-            
+
             Text(
                 text = artist,
                 style = MaterialTheme.typography.bodySmall,

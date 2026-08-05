@@ -67,7 +67,7 @@ import io.github.aedev.flow.discord.DiscordPresenceRuntime
 class MainActivity : ComponentActivity() {
     private val _deeplinkVideoId = mutableStateOf<String?>(null)
     val deeplinkVideoId: State<String?> = _deeplinkVideoId
-    
+
     private val _isDeeplinkShort = mutableStateOf(false)
     val isDeeplinkShort: State<Boolean> = _isDeeplinkShort
 
@@ -131,9 +131,9 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         DiscordPresenceRuntime.attachActivity(this)
-        
+
         window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-        
+
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(
                 android.graphics.Color.TRANSPARENT,
@@ -148,7 +148,7 @@ class MainActivity : ComponentActivity() {
             window.isNavigationBarContrastEnforced = false
             window.isStatusBarContrastEnforced = false
         }
-        
+
         // Player setup reads DataStore and opens the media cache index, so it runs off the main
         // thread and settles after the first frame instead of blocking onCreate.
         lifecycleScope.launch { GlobalPlayerState.initializeAsync(applicationContext) }
@@ -189,7 +189,7 @@ class MainActivity : ComponentActivity() {
 
         handleIntent(intent)
 
-        
+
         // Check for updates (only in release builds, only in github flavor)
         if (!BuildConfig.DEBUG && BuildConfig.UPDATER_ENABLED) {
             checkForUpdates(dataManager)
@@ -243,7 +243,7 @@ class MainActivity : ComponentActivity() {
             }
 
             var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
-            
+
             // Check for updates ONCE on launch — skip debug/foss builds, enforce 24h cooldown
             LaunchedEffect(Unit) {
                 if (BuildConfig.DEBUG || !BuildConfig.UPDATER_ENABLED) return@LaunchedEffect
@@ -294,7 +294,7 @@ class MainActivity : ComponentActivity() {
                     systemDarkThemeVariant = variant
                 }
             }
-            
+
             // Initialize Flow Neuro Engine
             LaunchedEffect(Unit) {
                 io.github.aedev.flow.data.recommendation.FlowNeuroEngine.initialize(applicationContext)
@@ -508,7 +508,7 @@ class MainActivity : ComponentActivity() {
             }
             return
         }
-        
+
         // Reset shorts flag
         _isDeeplinkShort.value = false
 
@@ -529,12 +529,12 @@ class MainActivity : ComponentActivity() {
         } else {
             notificationVideoId
         }
-        
+
         // Check extra
         if (intent.getBooleanExtra("is_short", false) || intent.getBooleanExtra("is_shorts", false)) {
             _isDeeplinkShort.value = true
         }
-        
+
         if (videoId != null) {
             _deeplinkVideoId.value = videoId
             intent.putExtra("deeplink_video_id", videoId)
@@ -696,13 +696,13 @@ class MainActivity : ComponentActivity() {
         // We use the EnhancedPlayerManager directly to get the immediate state
         val playerManager = io.github.aedev.flow.player.EnhancedPlayerManager.getInstance()
         val musicManager = io.github.aedev.flow.player.EnhancedMusicPlayerManager
-        
-        val isVideoPlaying = playerManager.playerState.value.isPlaying && 
+
+        val isVideoPlaying = playerManager.playerState.value.isPlaying &&
                            playerManager.playerState.value.currentVideoId != null &&
                            playerManager.getCurrentPosition() > 500 // At least 0.5s in
-        
+
         val isMusicPlaying = musicManager.playerState.value.isPlaying
-        
+
         // Only enter PiP for video, not for music (which uses background service)
         val shouldEnterAutoPip = BackgroundPlaybackPolicy.shouldEnterAutoPip(
             autoPipEnabled = cachedAutoPipEnabled,
@@ -816,7 +816,7 @@ class MainActivity : ComponentActivity() {
                     .url("https://api.github.com/repos/A-EDev/Flow/releases/latest")
                     .header("Accept", "application/vnd.github.v3+json")
                     .build()
-                
+
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
                     val body = response.body?.string()
@@ -824,12 +824,12 @@ class MainActivity : ComponentActivity() {
                         val json = JsonParser.parseString(body).asJsonObject
                         val latestTag = json.get("tag_name").asString
                         val currentVersion = BuildConfig.VERSION_NAME
-                        
+
                         val cleanLatest = latestTag.removePrefix("v").split("-").first()
                         val cleanCurrent = currentVersion.removePrefix("v").split("-").first()
-                        
+
                         Log.d("MainActivity", "Latest tag: $latestTag, Current: $currentVersion, Comparing: $cleanLatest vs $cleanCurrent")
-                        
+
                         if (isNewerVersion(cleanLatest, cleanCurrent)) {
                             withContext(Dispatchers.Main) {
                                 AlertDialog.Builder(this@MainActivity)
@@ -844,10 +844,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                
+
                 // Update last check time
                 dataManager.setLastUpdateCheck(currentTime)
-                
+
             } catch (e: Exception) {
                 Log.e("MainActivity", "Failed to check for updates", e)
             }
@@ -859,7 +859,7 @@ class MainActivity : ComponentActivity() {
         val cleanCurrent = current.split("-").first()
         val latestParts = cleanLatest.split(".").mapNotNull { it.toIntOrNull() }
         val currentParts = cleanCurrent.split(".").mapNotNull { it.toIntOrNull() }
-        
+
         val size = maxOf(latestParts.size, currentParts.size)
         for (i in 0 until size) {
             val l = latestParts.getOrNull(i) ?: 0
@@ -868,29 +868,5 @@ class MainActivity : ComponentActivity() {
             if (l < c) return false
         }
         return false
-    }
-
-    /**
-     * Ask Android to whitelist this app from battery optimization / Doze mode.
-     *
-     * Without this, on aggressive OEM ROMs (Xiaomi MIUI, Samsung OneUI DeX, CRDroid, Huawei)
-     * the OS can throttle network access or kill the background playback service after a few
-     * minutes of screen-off. 
-     *
-     * The system shows a standard dialog asking the user to confirm.  We only request this once
-     * per install (if the app is not already exempt).  No spammy repeat prompts.
-     */
-    private fun requestBatteryOptimizationExemptionIfNeeded() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
-        val powerManager = getSystemService(Context.POWER_SERVICE) as? PowerManager ?: return
-        if (powerManager.isIgnoringBatteryOptimizations(packageName)) return // already exempt
-        try {
-            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                data = Uri.parse("package:$packageName")
-            }
-            startActivity(intent)
-        } catch (e: Exception) {
-            Log.w("MainActivity", "Could not request battery optimization exemption: ${e.message}")
-        }
     }
 }

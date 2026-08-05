@@ -106,7 +106,7 @@ fun SettingsScreen(
     val appUiMode by appUiModePreferences.mode.collectAsStateWithLifecycle(initialValue = AppUiMode.AUTOMATIC)
     var showInterfaceModeDialog by remember { mutableStateOf(false) }
     val backupRepo = remember { io.github.aedev.flow.data.local.BackupRepository(context) }
-    
+
     // Brain State
     var userBrain by remember { mutableStateOf<UserBrain?>(null) }
     var refreshBrainTrigger by remember { mutableStateOf(0) }
@@ -114,7 +114,7 @@ fun SettingsScreen(
     LaunchedEffect(refreshBrainTrigger) {
         userBrain = FlowNeuroEngine.getBrainSnapshot()
     }
-    
+
     var showRegionDialog by remember { mutableStateOf(false) }
     var showAppLanguageDialog by remember { mutableStateOf(false) }
     var showResetBrainDialog by remember { mutableStateOf(false) }
@@ -122,7 +122,7 @@ fun SettingsScreen(
     var isCheckingUpdate by remember { mutableStateOf(false) }
     // null = no dialog; non-null = tag string of the available update
     var updateAvailableTag by remember { mutableStateOf<String?>(null) }
-    
+
     // Player preferences states
     val currentRegion by playerPreferences.trendingRegion.collectAsState(initial = "US")
     val currentAppLanguage by playerPreferences.appLanguage.collectAsState(initial = AppLanguageManager.SYSTEM_DEFAULT)
@@ -537,7 +537,7 @@ item {
                         )
                     }
                 }
-                
+
                 // Bottom CTA
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -550,7 +550,7 @@ item {
                     )
                     Spacer(Modifier.width(4.dp))
                     Icon(
-                        Icons.Default.ArrowForward, 
+                        Icons.Default.ArrowForward,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(16.dp)
@@ -728,7 +728,7 @@ item {
             // =================================================
             item { SectionHeader(text = androidx.compose.ui.res.stringResource(io.github.aedev.flow.R.string.settings_header_appearance)) }
             item {
-                SettingsGroup { 
+                SettingsGroup {
                     SettingsItem(
                         icon = Icons.Outlined.Palette,
                         title = androidx.compose.ui.res.stringResource(io.github.aedev.flow.R.string.settings_item_theme),
@@ -784,7 +784,7 @@ item {
             // CONTENT & PLAYBACK
             // =================================================
             item { SectionHeader(text = androidx.compose.ui.res.stringResource(io.github.aedev.flow.R.string.settings_header_content_playback)) }
-            
+
             item {
                 SettingsGroup {
                     SettingsItem(
@@ -858,7 +858,7 @@ item {
                     )
                 }
             }
-            
+
             // =================================================
             // NOTIFICATIONS
             // =================================================
@@ -879,7 +879,7 @@ item {
             // DATA MANAGEMENT
             // =================================================
             item { SectionHeader(text = androidx.compose.ui.res.stringResource(io.github.aedev.flow.R.string.settings_header_data_management)) }
-            
+
             item {
                 SettingsGroup {
                     SettingsItem(
@@ -925,7 +925,7 @@ item {
                     )
                 }
             }
-            
+
             // =================================================
             // ABOUT
             // =================================================
@@ -1034,11 +1034,11 @@ item {
             onDismissRequest = { showResetBrainDialog = false },
             icon = { Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.error) },
             title = { Text(androidx.compose.ui.res.stringResource(io.github.aedev.flow.R.string.settings_reset_brain_title)) },
-            text = { 
+            text = {
                 Text(
                     androidx.compose.ui.res.stringResource(io.github.aedev.flow.R.string.settings_reset_brain_body),
                     style = MaterialTheme.typography.bodyMedium
-                ) 
+                )
             },
             confirmButton = {
                 TextButton(
@@ -1241,28 +1241,7 @@ item {
             dismissButton = { TextButton(onClick = { showRegionDialog = false }) { Text(androidx.compose.ui.res.stringResource(io.github.aedev.flow.R.string.cancel)) } }
         )
     }
-    
-}
 
-@Composable
-fun BrainTraitRow(label: String, value: Double, leftLabel: String, rightLabel: String) {
-    Column {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(label, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-            Text("${(value * 100).toInt()}%", style = MaterialTheme.typography.labelMedium)
-        }
-        Spacer(Modifier.height(4.dp))
-        LinearProgressIndicator(
-            progress = value.toFloat(), // Fixed: No lambda
-            modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
-            color = MaterialTheme.colorScheme.secondary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(leftLabel, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(rightLabel, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
 }
 
 private val REGION_NAMES = mapOf(

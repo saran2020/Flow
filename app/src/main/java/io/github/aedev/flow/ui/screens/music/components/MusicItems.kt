@@ -100,9 +100,9 @@ fun TrackListItem(
                 thumbnailOverlay?.invoke(this)
             }
         }
-        
+
         Spacer(modifier = Modifier.width(16.dp))
-        
+
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.Center
@@ -133,7 +133,7 @@ fun TrackListItem(
                 )
             }
         }
-        
+
         if (isDownloaded) {
             Icon(
                 imageVector = Icons.Rounded.OfflinePin,
@@ -162,43 +162,6 @@ fun TrackListItem(
 }
 
 @Composable
-fun ArtistGridItem(
-    artist: String,
-    thumbnailUrl: String?,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .width(100.dp)
-            .clickable(onClick = onClick),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Surface(
-            shape = CircleShape,
-            modifier = Modifier.size(100.dp),
-            tonalElevation = 4.dp
-        ) {
-            AsyncImage(
-                model = thumbnailUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = artist,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-    }
-}
-
-@Composable
 fun QuickPickItem(
     track: MusicTrack,
     isPlaying: Boolean = false,
@@ -215,25 +178,6 @@ fun QuickPickItem(
         onLongClick = onLongClick,
         onMenuClick = onMenuClick,
         modifier = Modifier.width(320.dp) // Fixed width for horizontal lists
-    )
-}
-
-@Composable
-fun CompactTrackCard(
-    track: MusicTrack,
-    isDownloaded: Boolean = false,
-    onClick: () -> Unit,
-    onLongClick: (() -> Unit)? = null,
-    onMenuClick: (() -> Unit)? = null,
-    onArtistClick: ((String) -> Unit)? = null
-) {
-    TrackListItem(
-        track = track,
-        isDownloaded = isDownloaded,
-        onClick = onClick,
-        onLongClick = onLongClick,
-        showMenu = onMenuClick != null,
-        onMenuClick = { onMenuClick?.invoke() }
     )
 }
 

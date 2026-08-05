@@ -256,7 +256,7 @@ internal fun ShortVideoPage(
                 }
             }
         }
-        
+
         if (isActive && player != null) {
             player.addListener(eventListener)
         }
@@ -786,7 +786,7 @@ internal fun ShortVideoPage(
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp) 
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ShortsActionButton(
                     icon = if (isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
@@ -859,7 +859,7 @@ internal fun ShortVideoPage(
 
                 Box(
                     modifier = Modifier
-                        .size(36.dp) 
+                        .size(36.dp)
                         .background(Color.DarkGray, CircleShape)
                         .padding(3.dp)
                 ) {
@@ -1672,23 +1672,6 @@ fun ShortsActionButton(
             )
         }
     }
-}
-
-@Composable
-fun ActionButton(
-    icon: ImageVector,
-    text: String,
-    tint: Color = Color.White,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    ShortsActionButton(
-        icon = icon,
-        text = text,
-        tint = tint,
-        onClick = onClick,
-        modifier = modifier
-    )
 }
 
 fun formatViewCount(count: Long): String {

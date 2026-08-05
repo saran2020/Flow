@@ -144,7 +144,7 @@ fun VideoInfoSection(
                 }
             )
         )
-        
+
         // View count and date in a subtle row below title
         Row(
             modifier = Modifier
@@ -174,9 +174,9 @@ fun VideoInfoSection(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(4.dp))
-            
+
             Text(
                 text = stringResource(R.string.read_more),
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
@@ -204,9 +204,9 @@ fun VideoInfoSection(
                     contentDescription = displayChannelName,
                     avatarSize = 44.dp
                 )
-                
+
                 Spacer(modifier = Modifier.width(12.dp))
-                
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = displayChannelName,
@@ -218,7 +218,7 @@ fun VideoInfoSection(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    
+
                     val subText = subscriberCount?.let { formatSubscriberCount(it) } ?: ""
                     if (subText.isNotEmpty()) {
                         Text(
@@ -295,7 +295,7 @@ fun CommentsPreview(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             if (showPreviewText && !latestComment.isNullOrBlank()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -309,7 +309,7 @@ fun CommentsPreview(
                         contentScale = ContentScale.Crop
                     )
                     Spacer(modifier = Modifier.width(12.dp))
-                    
+
                     val primaryColor = MaterialTheme.colorScheme.primary
                     val annotatedComment = if (!latestComment.isNullOrBlank()) {
                         formatRichText(
@@ -473,7 +473,7 @@ fun VideoActionRow(
                 onDislikeClick = onDislikeClick
             )
         }
-        
+
         item {
             ActionChip(
                 icon = if (isSaved) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder,
@@ -482,7 +482,7 @@ fun VideoActionRow(
                 tint = if (isSaved) MaterialTheme.colorScheme.primary else null
             )
         }
-        
+
         item {
             ActionChip(
                 icon = if (isDownloaded) Icons.Outlined.CheckCircle else Icons.Outlined.Download,
@@ -491,7 +491,7 @@ fun VideoActionRow(
                 tint = if (isDownloaded) MaterialTheme.colorScheme.primary else null
             )
         }
-        
+
         item {
             ActionChip(
                 icon = Icons.Outlined.Headphones,
@@ -499,7 +499,7 @@ fun VideoActionRow(
                 onClick = onBackgroundPlayClick
             )
         }
-        
+
         item {
             ActionChip(
                 icon = Icons.Outlined.Share,
@@ -523,7 +523,7 @@ fun VideoActionRow(
                 onClick = onCopyLinkAtTimeClick
             )
         }
-        
+
     }
 }
 
@@ -556,16 +556,16 @@ fun SegmentedLikeDislikeButton(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 val likeText = if (likeCount != null && likeCount > 0) {
-                    formatViewCount(likeCount) 
+                    formatViewCount(likeCount)
                 } else if (likeState == "LIKED") stringResource(R.string.liked) else stringResource(R.string.like)
-                
+
                 Text(
                     text = likeText,
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium),
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
-            
+
             // Divider
             Box(
                 modifier = Modifier
@@ -573,7 +573,7 @@ fun SegmentedLikeDislikeButton(
                     .height(24.dp)
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
             )
-            
+
             // Dislike Button
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -587,7 +587,7 @@ fun SegmentedLikeDislikeButton(
                     modifier = Modifier.size(18.dp),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
-                             
+
                 if (dislikeCount != null && dislikeCount > 0) {
                      Spacer(modifier = Modifier.width(6.dp))
                      Text(
@@ -633,104 +633,3 @@ fun ActionChip(
         }
     }
 }
-
-/**
- * Enhanced description box with proper rendering of:
- * - Line breaks
- * - Clickable links
- * - Timestamps (0:00 format)
- * - Hashtags
- * - Chapter markers
- */
-@Composable
-fun EnhancedDescriptionBox(
-    description: String?,
-    onTimestampClick: ((Long) -> Unit)? = null
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val textColor = MaterialTheme.colorScheme.onSurface
-    val secondaryTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-    
-    Surface(
-        onClick = { expanded = !expanded },
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-    ) {
-        Column(
-            modifier = Modifier.padding(14.dp)
-        ) {
-            // Header with icon
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Description,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = secondaryTextColor
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = stringResource(R.string.description),
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = secondaryTextColor
-                )
-            }
-            
-            if (!description.isNullOrBlank()) {
-                // Use unified rich text formatter for HTML, links, and timestamps
-                val annotatedDescription = formatRichText(
-                    text = description,
-                    primaryColor = primaryColor,
-                    textColor = textColor
-                )
-                
-                Text(
-                    text = annotatedDescription,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        lineHeight = 24.sp
-                    ),
-                    color = textColor,
-                    maxLines = if (expanded) Int.MAX_VALUE else 3,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                // Show more/less button
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp)
-                ) {
-                    Text(
-                        text = if (expanded) stringResource(R.string.ui_show_less) else stringResource(R.string.ui_show_more),
-                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
-                        color = primaryColor
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = primaryColor
-                    )
-                }
-            } else {
-                Text(
-                    text = stringResource(R.string.empty_description),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = secondaryTextColor
-                )
-            }
-        }
-    }
-}
-
