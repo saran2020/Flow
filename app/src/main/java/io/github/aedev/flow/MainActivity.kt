@@ -16,9 +16,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -337,8 +340,9 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // Request notification permission for Android 13+
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // Request notification permission for Android 13+ (skip if requested by benchmark/test)
+                val skipOnboarding = intent?.getBooleanExtra("extra_skip_onboarding", false) == true
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !skipOnboarding) {
                     val permissionLauncher =
                         androidx.activity.compose.rememberLauncherForActivityResult(
                             androidx.activity.result.contract.ActivityResultContracts
@@ -366,7 +370,15 @@ class MainActivity : ComponentActivity() {
                 // collect them individually, so a feed of ten opened ten Room observers and
                 // fifty DataStore collectors.
                 ProvideVideoCardState {
-                    Box(modifier = Modifier.fillMaxSize()) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .semantics {
+                                    @OptIn(ExperimentalComposeUiApi::class)
+                                    testTagsAsResourceId = true
+                                },
+                    ) {
                         // 1. MAIN APP (Home/NavHost)
                         // This loads *behind* the splash screen immediately.
                         // By the time splash fades, this is ready.

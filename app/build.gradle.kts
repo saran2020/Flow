@@ -115,6 +115,11 @@ android {
             )
             signingConfig = signingConfigs.getByName("debug")
         }
+        create("benchmark") {
+            initWith(buildTypes.getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+        }
         release {
             isDebuggable = false
             isMinifyEnabled = true

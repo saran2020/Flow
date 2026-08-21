@@ -1,6 +1,7 @@
 package io.github.aedev.flow.ui
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -137,11 +138,12 @@ fun FlowApp(
 
     // Onboarding check
     var needsOnboarding by remember { mutableStateOf<Boolean?>(null) }
+    val skipOnboarding = activity.intent?.getBooleanExtra("extra_skip_onboarding", false) == true
 
     LaunchedEffect(Unit) {
         FlowNeuroEngine.initialize(context)
         DeepFlowManager.initialize(context)
-        needsOnboarding = FlowNeuroEngine.needsOnboarding()
+        needsOnboarding = if (skipOnboarding) false else FlowNeuroEngine.needsOnboarding()
     }
 
     LaunchedEffect(sleepTimerCloseAppOnExpiry) {

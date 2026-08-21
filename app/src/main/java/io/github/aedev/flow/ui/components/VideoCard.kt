@@ -3,6 +3,7 @@
 package io.github.aedev.flow.ui.components
 
 import android.util.Log
+import androidx.activity.compose.ReportDrawn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -682,6 +683,8 @@ fun VideoCardHorizontal(
             onDismiss = { showCollaborators = false },
         )
     }
+
+    ReportDrawn()
 }
 
 @Composable

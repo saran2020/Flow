@@ -1,5 +1,6 @@
 package io.github.aedev.flow.ui.screens.home
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -36,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.vector.PathParser
-import androidx.hilt.navigation.compose.hiltViewModel
+import io.github.aedev.flow.ui.theme.FlowTheme
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.aedev.flow.data.model.Video
@@ -47,6 +48,7 @@ import io.github.aedev.flow.R
 import io.github.aedev.flow.player.DeepFlowManager
 
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.platform.testTag
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -54,6 +56,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.Dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import io.github.aedev.flow.ui.TabScrollEventBus
 
 private data class HomeLayoutConfig(
@@ -96,7 +101,7 @@ fun HomeScreen(
     onChannelClick: (String) -> Unit = {},
     onNavigateToHistory: () -> Unit = {},
     onOpenShortsFeed: () -> Unit = {},
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.testTag("feed"),
     viewModel: HomeViewModel = hiltViewModel(),
     notificationViewModel: NotificationViewModel = hiltViewModel()
 ) {
